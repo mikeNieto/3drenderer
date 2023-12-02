@@ -1,9 +1,8 @@
 build:
-	mkdir -p build
-	gcc -Wall -std=c99 ./src/*.c -lSDL2 -o build/renderer
+	gcc -Wall -std=c99 ./src/*.c -lSDL2 -lm -o renderer
 
 run:
-	./build/renderer
+	./renderer
 
 clean:
-	rm -rf build
+	rm renderer

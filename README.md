@@ -1,4 +1,4 @@
-# 3d Renderer
+# 3D Renderer
 
 This is a project to render 3D objects without using libraries such as OpenGL, Vulkan or Direct3DX
 
