@@ -16,6 +16,9 @@ bool is_running = false;
 
 void setup(void)
 {
+    render_method = RENDER_WIRE;
+    cull_method = CULL_BACKFACE;
+
     // Allocating the required memory in bytes to hold the color buffer
     color_buffer = (uint32_t *)malloc(sizeof(uint32_t) * window_width * window_height);
 
@@ -35,7 +38,8 @@ void setup(void)
         window_height);
 
     // Load the mesh values in the data structure
-    load_obj_file_data("./assets/cube.obj");
+    load_cube_mesh_data();
+    // load_obj_file_data("./assets/cube.obj");
 }
 
 void process_input(void)
@@ -52,6 +56,20 @@ void process_input(void)
     case SDL_KEYDOWN:
         if (event.key.keysym.sym == SDLK_ESCAPE)
             is_running = false;
+        if (event.key.keysym.sym == SDLK_1)
+            render_method = RENDER_WIRE_VERTEX;
+        if (event.key.keysym.sym == SDLK_2)
+            render_method = RENDER_WIRE;
+        if (event.key.keysym.sym == SDLK_3)
+            render_method = RENDER_FILL_TRIANGLE;
+        if (event.key.keysym.sym == SDLK_4)
+            render_method = RENDER_FILL_TRIANGLE_WIRE;
+
+        if (event.key.keysym.sym == SDLK_c)
+            cull_method = CULL_BACKFACE;
+        if (event.key.keysym.sym == SDLK_d)
+            cull_method = CULL_NONE;
+
         break;
     }
 }
@@ -121,7 +139,6 @@ void update(void)
         face_vertices[1] = mesh.vertices[mesh_face.b - 1];
         face_vertices[2] = mesh.vertices[mesh_face.c - 1];
 
-        triangle_t projected_triangle;
         vec3_t transformed_vertices[3];
 
         // Loop all 3 vertices and apply transformations
@@ -141,10 +158,13 @@ void update(void)
         }
 
         // Check backface culling
-        float camera_alignment = backface_culling(transformed_vertices);
+        float camera_alignment = cull_method == CULL_BACKFACE ? backface_culling(transformed_vertices) : 1;
 
-        if (camera_alignment >= 0)
+        if (camera_alignment > 0)
         {
+            triangle_t projected_triangle;
+
+            float sum_depth = 0;
             for (int j = 0; j < 3; j++)
             {
                 // Projecting transformed vertex to 2D
@@ -156,10 +176,34 @@ void update(void)
 
                 // Add the projected point
                 projected_triangle.points[j] = projected_point;
+
+                // Sum all z values
+                sum_depth += transformed_vertices[j].z;
             }
+            // Add the same color of the mesh to the projected triangle
+            projected_triangle.color = mesh_face.color;
+
+            // Calculate the average depth
+            projected_triangle.avg_depth = sum_depth / 3;
 
             // Save the projected triangle in the array of triangles to render
             array_push(triangles_to_render, projected_triangle);
+        }
+
+        // Sort triangles to render by their avg_depth
+        int num_triangles = array_length(triangles_to_render);
+        for (int i = 0; i < num_triangles; i++)
+        {
+            for (int j = i; j < num_triangles; j++)
+            {
+                if (triangles_to_render[i].avg_depth > triangles_to_render[j].avg_depth)
+                {
+                    // Swap the triangles positions in the array
+                    triangle_t temp = triangles_to_render[i];
+                    triangles_to_render[i] = triangles_to_render[j];
+                    triangles_to_render[j] = temp;
+                }
+            }
         }
     }
 }
@@ -168,28 +212,43 @@ void render(void)
 {
     draw_grid(50);
 
-    uint32_t vertex_color = 0XFF00FFFF;
-    uint32_t line_color = 0XFF0000FF;
-    int vertex_size = 2;
-
     // Loop all projected triangles and render them
     for (int i = 0; i < array_length(triangles_to_render); i++)
     {
         triangle_t triangle = triangles_to_render[i];
 
-        // Draw vertex points
-        draw_rect(triangle.points[0].x, triangle.points[0].y, vertex_size, vertex_size, vertex_color);
-        draw_rect(triangle.points[1].x, triangle.points[1].y, vertex_size, vertex_size, vertex_color);
-        draw_rect(triangle.points[2].x, triangle.points[2].y, vertex_size, vertex_size, vertex_color);
+        if (render_method == RENDER_FILL_TRIANGLE || render_method == RENDER_FILL_TRIANGLE_WIRE)
+        {
+            // Draw filled triangle
+            draw_filled_triangle(triangle.points[0].x, triangle.points[0].y,
+                                 triangle.points[1].x, triangle.points[1].y,
+                                 triangle.points[2].x, triangle.points[2].y,
+                                 triangle.color);
+        }
 
-        // Draw unfilled triangle
-        draw_triangle(
-            triangle.points[0].x, triangle.points[0].y,
-            triangle.points[1].x, triangle.points[1].y,
-            triangle.points[2].x, triangle.points[2].y,
-            line_color);
+        if (render_method == RENDER_WIRE || render_method == RENDER_WIRE_VERTEX || render_method == RENDER_FILL_TRIANGLE_WIRE)
+        {
+            uint32_t line_color = 0XFF00FF00;
+
+            // Draw unfilled triangle
+            draw_triangle(
+                triangle.points[0].x, triangle.points[0].y,
+                triangle.points[1].x, triangle.points[1].y,
+                triangle.points[2].x, triangle.points[2].y,
+                line_color);
+        }
+
+        if (render_method == RENDER_WIRE_VERTEX)
+        {
+            uint32_t vertex_color = 0XFFFF0000;
+            int vertex_size = 6;
+            // Draw vertex points
+            draw_rect(triangle.points[0].x - 3, triangle.points[0].y - 3, vertex_size, vertex_size, vertex_color);
+            draw_rect(triangle.points[1].x - 3, triangle.points[1].y - 3, vertex_size, vertex_size, vertex_color);
+            draw_rect(triangle.points[2].x - 3, triangle.points[2].y - 3, vertex_size, vertex_size, vertex_color);
+        }
     }
-    
+
     // Clear the array of triangles every frame
     array_free(triangles_to_render);
     triangles_to_render = NULL;
