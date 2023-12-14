@@ -81,7 +81,7 @@ void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32
     {
         // Calculate the new vertex (Mx, My) using triangle similarity
         int My = y1;
-        int Mx = ((float)((x2 - x0) * (y1 - y0)) / (float)(y2 - y0)) + x0;
+        int Mx = (((x2 - x0) * (y1 - y0)) / (y2 - y0)) + x0;
 
         // Draw flat-bottom triangle
         fill_flat_bottom_triangle(x0, y0, x1, y1, Mx, My, color);
