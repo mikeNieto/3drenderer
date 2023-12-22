@@ -1,25 +1,22 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-typedef struct
-{
-    float x;
-    float y;
+typedef struct {
+  float x;
+  float y;
 } vec2_t;
 
-typedef struct
-{
-    float x;
-    float y;
-    float z;
+typedef struct {
+  float x;
+  float y;
+  float z;
 } vec3_t;
 
-typedef struct
-{
-    float x;
-    float y;
-    float z;
-    float w;
+typedef struct {
+  float x;
+  float y;
+  float z;
+  float w;
 } vec4_t;
 
 // Vector 2D functions
