@@ -21,6 +21,7 @@ int previous_frame_rate = 0;
 vec3_t camera_position = {.x = 0, .y = 0, .z = 0};
 mat4_t proj_matrix;
 
+
 void setup(void) {
   render_method = RENDER_TEXTURE_WIRE;
   cull_method = CULL_BACKFACE;
@@ -48,11 +49,11 @@ void setup(void) {
   proj_matrix = mat4_make_perspective(fov, aspect, znear, zfar);
 
   // Load the mesh values in the data structure
-  load_cube_mesh_data();
-  // load_obj_file_data("./assets/cube.obj");
+  // load_cube_mesh_data();
+  load_obj_file_data("./assets/crab.obj");
 
   // Load the texture information from an external PNG file
-  load_png_texture_data("./assets/cube.png");
+  load_png_texture_data("./assets/crab.png");
 }
 
 void process_input(void) {
@@ -133,9 +134,9 @@ void update(void) {
     face_t mesh_face = mesh.faces[i];
 
     vec3_t face_vertices[3];
-    face_vertices[0] = mesh.vertices[mesh_face.a - 1];
-    face_vertices[1] = mesh.vertices[mesh_face.b - 1];
-    face_vertices[2] = mesh.vertices[mesh_face.c - 1];
+    face_vertices[1] = mesh.vertices[mesh_face.b];
+    face_vertices[2] = mesh.vertices[mesh_face.c];
+    face_vertices[0] = mesh.vertices[mesh_face.a];
 
     vec4_t transformed_vertices[3];
 
