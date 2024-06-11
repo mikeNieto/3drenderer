@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #include "array.h"
 #include "display.h"
 #include "light.h"
@@ -7,7 +9,6 @@
 #include "triangle.h"
 #include "upng.h"
 #include "vector.h"
-#include <stdbool.h>
 
 #define PI 3.14159265358979323846264338327950288
 
@@ -21,10 +22,9 @@ int previous_frame_rate = 0;
 vec3_t camera_position = {.x = 0, .y = 0, .z = 0};
 mat4_t proj_matrix;
 
-
 void setup(void) {
   render_method = RENDER_TEXTURE_WIRE;
-  cull_method = CULL_BACKFACE;
+  // cull_method = CULL_BACKFACE;
 
   // Allocating the required memory in bytes to hold the color buffer
   color_buffer =
@@ -42,7 +42,7 @@ void setup(void) {
                                            window_width, window_height);
 
   // Initialize the perspective projection matrix
-  float fov = PI / 3.0; // the same as 160/3 deg but in rad
+  float fov = PI / 3.0;  // the same as 160/3 deg but in rad
   float aspect = (float)window_height / (float)window_width;
   float znear = 0.1;
   float zfar = 100.0;
@@ -62,31 +62,23 @@ void process_input(void) {
   SDL_PollEvent(&event);
 
   switch (event.type) {
-  case SDL_QUIT:
-    is_running = false;
-    break;
-  case SDL_KEYDOWN:
-    if (event.key.keysym.sym == SDLK_ESCAPE)
+    case SDL_QUIT:
       is_running = false;
-    if (event.key.keysym.sym == SDLK_1)
-      render_method = RENDER_WIRE_VERTEX;
-    if (event.key.keysym.sym == SDLK_2)
-      render_method = RENDER_WIRE;
-    if (event.key.keysym.sym == SDLK_3)
-      render_method = RENDER_FILL_TRIANGLE;
-    if (event.key.keysym.sym == SDLK_4)
-      render_method = RENDER_FILL_TRIANGLE_WIRE;
-    if (event.key.keysym.sym == SDLK_5)
-      render_method = RENDER_TEXTURE;
-    if (event.key.keysym.sym == SDLK_6)
-      render_method = RENDER_TEXTURE_WIRE;
+      break;
+    case SDL_KEYDOWN:
+      if (event.key.keysym.sym == SDLK_ESCAPE) is_running = false;
+      if (event.key.keysym.sym == SDLK_1) render_method = RENDER_WIRE_VERTEX;
+      if (event.key.keysym.sym == SDLK_2) render_method = RENDER_WIRE;
+      if (event.key.keysym.sym == SDLK_3) render_method = RENDER_FILL_TRIANGLE;
+      if (event.key.keysym.sym == SDLK_4)
+        render_method = RENDER_FILL_TRIANGLE_WIRE;
+      if (event.key.keysym.sym == SDLK_5) render_method = RENDER_TEXTURE;
+      if (event.key.keysym.sym == SDLK_6) render_method = RENDER_TEXTURE_WIRE;
 
-    if (event.key.keysym.sym == SDLK_c)
-      cull_method = CULL_BACKFACE;
-    if (event.key.keysym.sym == SDLK_d)
-      cull_method = CULL_NONE;
+      if (event.key.keysym.sym == SDLK_c) cull_method = CULL_BACKFACE;
+      if (event.key.keysym.sym == SDLK_d) cull_method = CULL_NONE;
 
-    break;
+      break;
   }
 }
 

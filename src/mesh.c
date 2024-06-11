@@ -1,9 +1,11 @@
 #define _GNU_SOURCE
 #include "mesh.h"
-#include "array.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "array.h"
 
 mesh_t mesh = {
     .vertices = NULL,
@@ -14,14 +16,14 @@ mesh_t mesh = {
 };
 
 vec3_t cube_vertices[N_CUBE_VERTICES] = {
-    {.x = -1, .y = -1, .z = -1}, // 1
-    {.x = -1, .y = 1, .z = -1},  // 2
-    {.x = 1, .y = 1, .z = -1},   // 3
-    {.x = 1, .y = -1, .z = -1},  // 4
-    {.x = 1, .y = 1, .z = 1},    // 5
-    {.x = 1, .y = -1, .z = 1},   // 6
-    {.x = -1, .y = 1, .z = 1},   // 7
-    {.x = -1, .y = -1, .z = 1},  // 8
+    {.x = -1, .y = -1, .z = -1},  // 1
+    {.x = -1, .y = 1, .z = -1},   // 2
+    {.x = 1, .y = 1, .z = -1},    // 3
+    {.x = 1, .y = -1, .z = -1},   // 4
+    {.x = 1, .y = 1, .z = 1},     // 5
+    {.x = 1, .y = -1, .z = 1},    // 6
+    {.x = -1, .y = 1, .z = 1},    // 7
+    {.x = -1, .y = -1, .z = 1},   // 8
 };
 
 face_t cube_faces[N_CUBE_FACES] = {
@@ -131,7 +133,7 @@ void load_cube_mesh_data(void) {
 void load_obj_file_data(char *filename) {
   FILE *file;
   char *line = NULL;
-  size_t bufsize = 0; // Initial buffer size
+  size_t bufsize = 0;  // Initial buffer size
   tex2_t *texcoords = NULL;
 
   // Open the file in read mode
@@ -146,17 +148,15 @@ void load_obj_file_data(char *filename) {
   // Read the file line by line
   while (getline(&line, &bufsize, file) != -1) {
     // Process each line
-    if (strncmp(line, "v ", 2) == 0) { // Vertices
+    if (strncmp(line, "v ", 2) == 0) {  // Vertices
       vec3_t vertex;
       sscanf(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
       array_push(mesh.vertices, vertex);
-
-    } else if (strncmp(line, "vt ", 3) == 0) { // Texture coordinates
+    } else if (strncmp(line, "vt ", 3) == 0) {  // Texture coordinates
       tex2_t texcoord;
       sscanf(line, "vt %f %f", &texcoord.u, &texcoord.v);
       array_push(texcoords, texcoord);
-
-    } else if (strncmp(line, "f ", 2) == 0) { // Faces
+    } else if (strncmp(line, "f ", 2) == 0) {  // Faces
       int vertex_indices[3];
       int texture_indices[3];
       int normal_indices[3];

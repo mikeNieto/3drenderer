@@ -1,4 +1,5 @@
 #include "triangle.h"
+
 #include "display.h"
 
 void fill_flat_bottom_triangle(int x0, int y0, int x1, int y1, int x2, int y2,
@@ -90,7 +91,7 @@ vec3_t barycentric_weights(vec2_t a, vec2_t b, vec2_t c, vec2_t p) {
 
   // Compute the area of the full parallegram/triangle ABC using 2D cross
   // product
-  float area_parallelogram_abc = (ac.x * ab.y - ac.y * ab.x); // || AC x AB ||
+  float area_parallelogram_abc = (ac.x * ab.y - ac.y * ab.x);  // || AC x AB ||
 
   // Alpha is the area of the small parallelogram/triangle PBC divided by the
   // area of the full parallelogram/triangle ABC
@@ -202,10 +203,8 @@ void draw_textured_triangle(int x0, int y0, float z0, float w0, float u0,
   float inv_slope_1 = 0;
   float inv_slope_2 = 0;
 
-  if (y1 - y0 != 0)
-    inv_slope_1 = (float)(x1 - x0) / abs(y1 - y0);
-  if (y2 - y0 != 0)
-    inv_slope_2 = (float)(x2 - x0) / abs(y2 - y0);
+  if (y1 - y0 != 0) inv_slope_1 = (float)(x1 - x0) / abs(y1 - y0);
+  if (y2 - y0 != 0) inv_slope_2 = (float)(x2 - x0) / abs(y2 - y0);
 
   if (y1 - y0 != 0) {
     for (int y = y0; y <= y1; y++) {
@@ -213,7 +212,7 @@ void draw_textured_triangle(int x0, int y0, float z0, float w0, float u0,
       int x_end = x0 + (y - y0) * inv_slope_2;
 
       if (x_end < x_start) {
-        int_swap(&x_start, &x_end); // swap if x_start is to the right of x_end
+        int_swap(&x_start, &x_end);  // swap if x_start is to the right of x_end
       }
 
       for (int x = x_start; x < x_end; x++) {
@@ -227,10 +226,8 @@ void draw_textured_triangle(int x0, int y0, float z0, float w0, float u0,
   inv_slope_1 = 0;
   inv_slope_2 = 0;
 
-  if (y2 - y1 != 0)
-    inv_slope_1 = (float)(x2 - x1) / abs(y2 - y1);
-  if (y2 - y0 != 0)
-    inv_slope_2 = (float)(x2 - x0) / abs(y2 - y0);
+  if (y2 - y1 != 0) inv_slope_1 = (float)(x2 - x1) / abs(y2 - y1);
+  if (y2 - y0 != 0) inv_slope_2 = (float)(x2 - x0) / abs(y2 - y0);
 
   if (y2 - y1 != 0) {
     for (int y = y1; y <= y2; y++) {
@@ -238,7 +235,7 @@ void draw_textured_triangle(int x0, int y0, float z0, float w0, float u0,
       int x_end = x0 + (y - y0) * inv_slope_2;
 
       if (x_end < x_start) {
-        int_swap(&x_start, &x_end); // swap if x_start is to the right of x_end
+        int_swap(&x_start, &x_end);  // swap if x_start is to the right of x_end
       }
 
       for (int x = x_start; x < x_end; x++) {

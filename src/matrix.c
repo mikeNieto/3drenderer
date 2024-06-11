@@ -1,4 +1,6 @@
+
 #include "matrix.h"
+
 #include <math.h>
 
 mat4_t mat4_identity(void) {
